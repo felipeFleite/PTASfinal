@@ -1,7 +1,7 @@
 # PTASfinal
 
 O projeto esta devidamente separado e é feito para registrar/alterar/buscar/deletar um livro na coleção do banco de dados.
-os modulos instalados foram feitos a partir de "npm i express", "npm i mongoose" e "npm start"
+os modulos instalados foram feitos a partir de "npm i express", "npm i mongoose" e "npm init"
 para rodar a aplicação basta escrever "node --watch ./server.js" no terminal
 
 As funções existentes estão todas na rota raiz,
