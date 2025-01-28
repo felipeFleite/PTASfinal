@@ -4,6 +4,8 @@ import rotainicial from './rotas/rotainicial.js'
 const app = express()
 const PORT = 3000
 
+app.use(express.json())
+
 app.use('/', rotainicial)
 
 app.listen(PORT, () => {
