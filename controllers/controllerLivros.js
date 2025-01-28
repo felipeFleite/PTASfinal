@@ -1,17 +1,23 @@
-const livros = [
-  {
-    nome: "Monstro do Lago Ness",
-    qPaginas: 100,
-    autor: "Felipe"
+import {livrosModel} from "../models/livros.js"
+
+const todosLivros = async(req, res) => {
+  try{
+    const livros = await livrosModel.find()
+    res.json({
+      erro: false,
+      livros
+    })
+  }catch (error) {
+    res.json({
+      erro: true,
+      error
+    })
   }
-]
-
-const todosLivros = (req, res) => {
-    res.send(livros);
-  };
+}
 
 
-  const addLivro = (req,res) => {
+  const addLivro = async(req,res) => {
+ try{
     const {nome, qPaginas, autor} = req.body
     
     if (!nome || !qPaginas || !autor){
@@ -21,87 +27,79 @@ const todosLivros = (req, res) => {
       })
     }
 
-    const livro = {
-      nome,
-      qPaginas,
-      autor
-    }
-
-    try{
-      livros.push(livro)
-      return res.json({
-        erro: false,
-        mensagem: 'Livro cadastrado'
-      })
-    } catch (error) {
-      console.log(error)
-      return res.json({
-        erro:true,
-        mensagem: error
-      })
-    }
+    const livro = new livrosModel({nome,qPaginas,autor})
+    await livro.save()
+    res.json(livro)
+  } catch(error) {
+    res.json({
+      erro: true,
+      mensagem: error
+    })
   }
+}
   
-  const livroId = (req, res) => {
-    const livroId = parseInt(req.params.id);
-    const livro = livros.find(i => i.id === livroId);
-  
-    if (livro) {
-      res.json(livro)
-    } else {
-      res.end({
+  const livroId = async(req, res) => {
+    try{
+        const {id} = req.params
+        const livro = await livrosModel.findById(id)
+        if(!livro){
+          res.json({
+            erro: true,
+            mensagem: "Livro não encontrado"
+          })
+        }
+        res.json({
+          erro:false,
+          livro
+        })
+    }catch (error) {
+      res.json({
         erro: true,
-        mensagem: "Livro não encontrado"
+        error
       })
     }
   };
   
 
-const attLivro = (req,res) => {
-  const livroId = parseInt(req.params.id)
-  const {nome, qPaginas, autor} = req.body
-
-  const livro = livros.find((i) => i.id === livroId)
-
-  if(!livro){
-    return res.json({
+const attLivro = async(req,res) => {
+  try{
+      const {id} = req.params
+      const livro = await livrosModel.findByIdAndUpdate(id, req.body, {new: true})
+      if(!livro){
+        res.json({
+        erro: true,
+        mensagem: "Livro não encontrado"
+        })
+      }res.json({
+        erro: false,
+        livro
+      })
+  }catch (error) {
+    res.json({
       erro: true,
-      mensagem: "Livro não encontrado"
+      error
     })
   }
-
-  if (!nome || !qPaginas || !autor){
-    return res.json({
-      erro:true,
-      mensagem: 'É necessário preencher todos os valores'
-    })
-  }
-    livro.nome = nome
-    livro.qPaginas = qPaginas
-    livro.autor = autor
-
-  res.json({
-    erro:false,
-    mensagem:"Livro alterado"
-  })
 }
 
-  const delLivro = (req,res) => {
-    const livroId = parseInt(req.params.id)
-    const index = livros.findIndex((i) => i.id === livroId)
-
-    if(index === -1){
-      return res.json({
-        erro:true,
-        mensagem: "Livro não encontrado"
+  const delLivro = async(req,res) => {
+    try{
+    const {id} = req.params
+    const livro = await livrosModel.findByIdAndDelete(id)
+      if(!livro){
+        res.json({
+          erro: true,
+          mensagem: "Livro não encontrado"
+        })
+      }res.json({
+        erro:false,
+        mensagem: "Livro excluido"
       })
-    }
-
-    alunos.splice(index,1)
+  }catch(error) {
     res.json({
-      erro: false,
-      mensagem: 'Livro excluido'
+      erro: true,
+      error
     })
   }
-
+}
 export default {todosLivros,livroId,addLivro,attLivro,delLivro} 
